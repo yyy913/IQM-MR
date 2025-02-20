@@ -1,0 +1,8 @@
+.venv/
+data/
+debug.ipynb
+datasplit/
+.DS_Store
+*.pyc
+__pycache__/
+results/
