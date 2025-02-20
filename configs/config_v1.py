@@ -14,7 +14,7 @@ class ConfigV1:
         # self.training_scheme = 'random_split'
         self.split = 1
 
-        self.exclude = True
+        self.exclude = False
         self.all_sequences = ['t1', 't1post', 't2', 'flair']
         if self.exclude:
             self.exclude_sequence = 'flair'  

@@ -10,7 +10,7 @@ def save_data(data_dict, folder_name):
         file_path = os.path.join(output_dir, f"{key}.npy")
         np.save(file_path, volume)
 
-def load_data(folder_name):
+def load_data_dict(folder_name):
     root_dir = os.path.join(os.getcwd(), 'data')
     output_dir = os.path.join(root_dir, folder_name)
 

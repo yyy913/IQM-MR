@@ -57,6 +57,57 @@ def load_npy_from_dropbox(dbx, folder_path, max_workers=12):
 
     return data_dict
 
+def list_all_files(dbx, folder_path):
+    all_entries = []
+    try:
+        result = dbx.files_list_folder(folder_path)
+        all_entries.extend(result.entries)
+        while result.has_more:
+            result = dbx.files_list_folder_continue(result.cursor)
+            all_entries.extend(result.entries)
+    except Exception as e:
+        print("Error retrieving file list:", e)
+    return all_entries
+
+def download_and_save_file(dbx, dropbox_path, local_path, max_retries=3, delay=5):
+    for attempt in range(max_retries):
+        try:
+            if attempt > 0:
+                print(f"Retry attempt {attempt+1} for downloading {dropbox_path}")
+            _, response = dbx.files_download(dropbox_path)
+            file_data = response.content
+            with open(local_path, 'wb') as f:
+                f.write(file_data)
+            return True
+        except Exception as e:
+            print(f"Download failed for {dropbox_path}: {e}")
+            if attempt + 1 == max_retries:
+                print(f"Maximum retry attempts reached for {dropbox_path}")
+                return False
+            else:
+                print(f"Retrying in {delay} seconds...")
+                time.sleep(delay)
+
+def download_and_save_all_files(dbx, folder_path, local_dir, max_workers=12):
+    all_entries = list_all_files(dbx, folder_path)
+    if not os.path.exists(local_dir):
+        os.makedirs(local_dir)
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {}
+        for entry in all_entries:
+            if isinstance(entry, dropbox.files.FileMetadata) and entry.name.endswith('.npy'):
+                dropbox_file_path = os.path.join(folder_path, entry.name)
+                local_file_path = os.path.join(local_dir, entry.name)
+                future = executor.submit(download_and_save_file, dbx, dropbox_file_path, local_file_path)
+                futures[future] = entry.name
+        
+        for future in as_completed(futures):
+            file_name = futures[future]
+            result = future.result()
+            if not result:
+                print(f"Failed to save {file_name}")
+
 def download_h5_file(dbx, dropbox_path, max_retries=3, delay=5):
     for attempt in range(max_retries):
         try:
