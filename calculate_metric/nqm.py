@@ -1,8 +1,6 @@
+# https://github.com/lucia15/Image-Quality-Assessment/blob/master/IQA_indices.py
+
 import numpy as np
-import cv2
-from scipy.ndimage.filters import gaussian_filter as __gaussian_filter
-from scipy.ndimage.filters import convolve as __convolve
-from scipy.ndimage.filters import correlate as __correlate
 from scipy.fftpack import fftshift as __fftshift
 
 def mse(reference, query):

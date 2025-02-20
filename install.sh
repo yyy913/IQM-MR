@@ -23,6 +23,7 @@ pip install scikit-learn
 
 # Install image quality assessment library (piq)
 pip install piq
+pip install lpips
 pip install pyrtools
 pip install PyWavelets
 pip install opencv-python

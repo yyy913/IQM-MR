@@ -6,3 +6,4 @@ datasplit/
 *.pyc
 __pycache__/
 results/
+RadImageNet_pytorch/

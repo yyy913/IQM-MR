@@ -1,7 +1,5 @@
 import numpy as np
 
-import numpy as np
-
 class PairGenerator:
     def __init__(self, tau=0.1):
         self.tau = tau

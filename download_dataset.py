@@ -2,95 +2,23 @@ import os
 import numpy as np
 from tqdm import tqdm
 from load_data.load_from_dropbox import dropbox_connect, load_npy_from_dropbox
+from load_data.data_io import save_data
 
-def save_data(data_dict, folder_name):
-    root_dir = os.path.join(os.getcwd(), 'data')
-    output_dir = os.path.join(root_dir, folder_name)
-    os.makedirs(output_dir, exist_ok=True) 
-    for key, volume in tqdm(data_dict.items(), desc="Save volumes"):
-        file_path = os.path.join(output_dir, f"{key}.npy")
-        np.save(file_path, volume)
+def process_group(file_keys, base_path='/simulation_data/'):
+    dbx = dropbox_connect()
+    for key in file_keys:
+        file_path = f"{base_path}{key}"
+        data = load_npy_from_dropbox(dbx, file_path)
+        print(f"Loaded {len(data)} npy files for {key}.")
+        save_data(data, key)
 
-dbx = dropbox_connect()
-t1post_clear = load_npy_from_dropbox(dbx, '/simulation_data/t1post_clear')
-print(f"Loaded {len(t1post_clear)} npy files.")
-t1post_g1 = load_npy_from_dropbox(dbx, '/simulation_data/t1post_g1')
-print(f"Loaded {len(t1post_g1)} npy files.")
-t1post_g2 = load_npy_from_dropbox(dbx, '/simulation_data/t1post_g2')
-print(f"Loaded {len(t1post_g2)} npy files.")
-t1post_g3 = load_npy_from_dropbox(dbx, '/simulation_data/t1post_g3')
-print(f"Loaded {len(t1post_g3)} npy files.")
-t1post_g4 = load_npy_from_dropbox(dbx, '/simulation_data/t1post_g4')
-print(f"Loaded {len(t1post_g4)} npy files.")
-t1post_g5 = load_npy_from_dropbox(dbx, '/simulation_data/t1post_g5')
-print(f"Loaded {len(t1post_g5)} npy files.")
+if __name__ == "__main__":
+    groups = {
+        "t1post": ["t1post_clear", "t1post_g1", "t1post_g2", "t1post_g3", "t1post_g4", "t1post_g5"],
+        "t1":     ["t1_clear", "t1_g1", "t1_g2", "t1_g3", "t1_g4", "t1_g5"],
+        "t2":     ["t2_clear", "t2_g1", "t2_g2", "t2_g3", "t2_g4", "t2_g5"],
+        "flair":  ["flair_clear", "flair_g1", "flair_g2", "flair_g3", "flair_g4", "flair_g5"]
+    }
 
-save_data(t1post_clear, "t1post_clear")
-save_data(t1post_g1, "t1post_g1")
-save_data(t1post_g2, "t1post_g2")
-save_data(t1post_g3, "t1post_g3")
-save_data(t1post_g4, "t1post_g4")
-save_data(t1post_g5, "t1post_g5")
-
-dbx = dropbox_connect()
-t1_clear = load_npy_from_dropbox(dbx, '/simulation_data/t1_clear')
-print(f"Loaded {len(t1_clear)} npy files.")
-t1_g1 = load_npy_from_dropbox(dbx, '/simulation_data/t1_g1')
-print(f"Loaded {len(t1_g1)} npy files.")
-t1_g2 = load_npy_from_dropbox(dbx, '/simulation_data/t1_g2')
-print(f"Loaded {len(t1_g2)} npy files.")
-t1_g3 = load_npy_from_dropbox(dbx, '/simulation_data/t1_g3')
-print(f"Loaded {len(t1_g3)} npy files.")
-t1_g4 = load_npy_from_dropbox(dbx, '/simulation_data/t1_g4')
-print(f"Loaded {len(t1_g4)} npy files.")
-t1_g5 = load_npy_from_dropbox(dbx, '/simulation_data/t1_g5')
-print(f"Loaded {len(t1_g5)} npy files.")
-
-save_data(t1_clear, "t1_clear")
-save_data(t1_g1, "t1_g1")
-save_data(t1_g2, "t1_g2")
-save_data(t1_g3, "t1_g3")
-save_data(t1_g4, "t1_g4")
-save_data(t1_g5, "t1_g5")
-
-dbx = dropbox_connect()
-t2_clear = load_npy_from_dropbox(dbx, '/simulation_data/t2_clear')
-print(f"Loaded {len(t2_clear)} npy files.")
-t2_g1 = load_npy_from_dropbox(dbx, '/simulation_data/t2_g1')
-print(f"Loaded {len(t2_g1)} npy files.")
-t2_g2 = load_npy_from_dropbox(dbx, '/simulation_data/t2_g2')
-print(f"Loaded {len(t2_g2)} npy files.")
-t2_g3 = load_npy_from_dropbox(dbx, '/simulation_data/t2_g3')
-print(f"Loaded {len(t2_g3)} npy files.")
-t2_g4 = load_npy_from_dropbox(dbx, '/simulation_data/t2_g4')
-print(f"Loaded {len(t2_g4)} npy files.")
-t2_g5 = load_npy_from_dropbox(dbx, '/simulation_data/t2_g5')
-print(f"Loaded {len(t2_g5)} npy files.")
-
-save_data(t2_clear, "t2_clear")
-save_data(t2_g1, "t2_g1")
-save_data(t2_g2, "t2_g2")
-save_data(t2_g3, "t2_g3")
-save_data(t2_g4, "t2_g4")
-save_data(t2_g5, "t2_g5")
-
-dbx = dropbox_connect()
-flair_clear = load_npy_from_dropbox(dbx, '/simulation_data/flair_clear')
-print(f"Loaded {len(flair_clear)} npy files.")
-flair_g1 = load_npy_from_dropbox(dbx, '/simulation_data/flair_g1')
-print(f"Loaded {len(flair_g1)} npy files.")
-flair_g2 = load_npy_from_dropbox(dbx, '/simulation_data/flair_g2')
-print(f"Loaded {len(flair_g2)} npy files.")
-flair_g3 = load_npy_from_dropbox(dbx, '/simulation_data/flair_g3')
-print(f"Loaded {len(flair_g3)} npy files.")
-flair_g4 = load_npy_from_dropbox(dbx, '/simulation_data/flair_g4')
-print(f"Loaded {len(flair_g4)} npy files.")
-flair_g5 = load_npy_from_dropbox(dbx, '/simulation_data/flair_g5')
-print(f"Loaded {len(flair_g5)} npy files.")
-
-save_data(flair_clear, "flair_clear")
-save_data(flair_g1, "flair_g1")
-save_data(flair_g2, "flair_g2")
-save_data(flair_g3, "flair_g3")
-save_data(flair_g4, "flair_g4")
-save_data(flair_g5, "flair_g5")
+    for group_name, file_keys in groups.items():
+        process_group(file_keys)

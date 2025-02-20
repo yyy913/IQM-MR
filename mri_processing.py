@@ -1,6 +1,7 @@
 import numpy as np
 import SimpleITK as sitk
 import torch
+import torch.nn.functional as F
 
 def ifft2c(k):
     x = torch.fft.fftshift(torch.fft.ifft2(torch.fft.ifftshift(k, (-2,-1)), norm='ortho'), (-2,-1))
@@ -58,6 +59,19 @@ def padding(volume, size=320):
         mode='edge'
     )
     return padded_volume
+
+def zero_pad_data(data, target_size=396):
+    _, _, h, w = data.shape
+    if w >= target_size and h >= target_size:
+        return data
+    
+    pad_w = (target_size - w) // 2
+    pad_h = (target_size - h) // 2
+    
+    pad = (pad_h, pad_h + (target_size - h) % 2, pad_w, pad_w + (target_size - w) % 2)
+
+    padded_data = F.pad(data, pad, mode='constant', value=0)
+    return padded_data
 
 def correct_bias_field(input_np):
     input_sitk = sitk.GetImageFromArray(input_np)

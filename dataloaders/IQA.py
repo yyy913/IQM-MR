@@ -12,7 +12,6 @@ warnings.simplefilter("ignore", UserWarning)
 
 class Train(Dataset):
     def __init__(self, cfg):
-        self.image_size = cfg.image_size
         self.label_type = cfg.label_type
         self.image_dir, self.df = get_df_v1(cfg, is_train=True)
         if cfg.exclude:
@@ -53,7 +52,6 @@ class Train(Dataset):
 
 class Test(Dataset):
     def __init__(self, cfg, subset='in'):
-        self.image_size = cfg.image_size
         self.label_type = cfg.label_type
         _, _, self.image_dir, self.df_test = get_df_v1(cfg, is_train=False)
 
@@ -90,7 +88,6 @@ class Test(Dataset):
 
 class Ref(Dataset):
     def __init__(self, cfg, subset='in'):
-        self.image_size = cfg.image_size
         self.label_type = cfg.label_type
         self.image_dir, self.df_base, _, _ = get_df_v1(cfg, is_train=False)
 

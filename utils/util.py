@@ -51,7 +51,7 @@ def tensor2np(tensor):
     return numpy_data
 
 def set_wandb(cfg):
-    wandb.login(key='')
+    wandb.login(key='f9adba663e4f851476c8d373bd553f31f2bfad4d')
     wandb.init(project=f'{cfg.dataset_name}', tags=[cfg.exp_name])
     wandb.config.update(cfg)
     wandb.save('*.py')

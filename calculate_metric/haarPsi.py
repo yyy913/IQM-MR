@@ -1,3 +1,4 @@
+# https://github.com/rgcda/haarpsi/blob/master/haarPsi.py
 
 """
 This module contains a Python and NumPy implementation of the HaarPSI perceptual similarity index algorithm,

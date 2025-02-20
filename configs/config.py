@@ -1,7 +1,7 @@
 import os
 from utils.util import get_current_time, write_log
 
-class ConfigV1:
+class Config:
     def __init__(self):
         # dataset
         self.dataset_name = 'Simulation' # 'Simulation', 'Severance'
@@ -22,8 +22,9 @@ class ConfigV1:
                                     if seq != self.exclude_sequence]
 
         # network
+        self.RadImageNet = False
         self.backbone = 'resnet50'
-        self.model_name = 'CTV29'
+        self.model_name = 'CTV29' # Transformer, Regressor
 
         # Score pivots
         self.spv_num = 101
@@ -90,8 +91,3 @@ class ConfigV1:
 
         # log_file.close()
         return log_file
-
-
-if __name__ == "__main__":
-    c = ConfigV1()
-    print('debug... ')

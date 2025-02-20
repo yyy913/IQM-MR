@@ -103,6 +103,28 @@ def load_h5_from_dropbox(dbx, folder_path, max_workers=12):
 
     return data_dict
 
+def upload_folder_to_dropbox(local_folder, dropbox_folder):
+    dbx = dropbox_connect()
+
+    for root, dirs, files in os.walk(local_folder):
+        relative_path = os.path.relpath(root, local_folder)
+        dropbox_path = os.path.join(dropbox_folder, relative_path).replace("\\", "/")
+        
+        if relative_path != ".":
+            try:
+                dbx.files_create_folder(dropbox_path)
+            except dropbox.exceptions.ApiError as e:
+                if e.error.is_path() and isinstance(e.error.get_path().is_conflict(), dropbox.files.FolderConflictError):
+                    pass  
+
+        for file_name in files:
+            local_file_path = os.path.join(root, file_name)
+            dropbox_file_path = os.path.join(dropbox_path, file_name).replace("\\", "/")
+            
+            with open(local_file_path, "rb") as f:
+                print(f"Uploading {file_name} to {dropbox_file_path}")
+                dbx.files_upload(f.read(), dropbox_file_path, mode=dropbox.files.WriteMode("overwrite"))
+
 # if __name__ == "__main__":
 #     dbx = dropbox_connect()
 

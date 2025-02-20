@@ -1,3 +1,5 @@
+# https://github.com/photosynthesis-team/piq/blob/master/piq/vif.py
+
 r"""Implementation of Visual Information Fidelity metric
 Code is based on MATLAB version for computations in pixel domain
 https://live.ece.utexas.edu/research/Quality/VIF.htm
