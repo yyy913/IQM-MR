@@ -15,10 +15,16 @@ def get_df_v1(cfg, is_train=False):
 
     elif cfg.dataset_name == 'Severance':
         if is_train:
-            pass
+            train_image_path = cfg.dataset_root
+            train_df_path = cfg.datasplit_root + 'severance_train.csv'
 
         else:
-            pass
+            ref_image_path = cfg.dataset_root
+            ref_df_path = cfg.datasplit_root + 'severance_train.csv'
+
+            test_image_path = cfg.dataset_root
+            test_df_path = cfg.datasplit_root + 'severance_test.csv'
+
     else:
         raise ValueError(f'Undefined database ({cfg.dataset_name}) has been given')
 

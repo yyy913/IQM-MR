@@ -4,29 +4,35 @@ from utils.util import get_current_time, write_log
 class ConfigV1:
     def __init__(self):
         # dataset
-        self.dataset_name = 'Simulation' # 'Simulation', 'Severance'
-        # self.mix_sequence = True 
-        self.label_type = 'LPIPS' # 'HaarPSI', 'VSI', 'VIF', 'NQM', 'LPIPS'
-        self.bin = 50
-        self.dataset_root = 'data/'
+        self.dataset_name = 'Severance' # 'Simulation', 'Severance'
+        self.dataset_root = 'data/severance/'
         self.datasplit_root = 'datasplit/'
-        self.label_df_root = 'iqm_csv/fr-iqm_20250215.csv'
-        # self.training_scheme = 'random_split'
-        self.split = 1
+        self.label_df_root = 'iqm_csv/severance_label_250415.csv'
+
+        # self.mix_sequence = True 
+        if self.dataset_name == 'Simulation':
+            self.label_type = 'LPIPS' # 'HaarPSI', 'VSI', 'VIF', 'NQM', 'LPIPS'
+            self.bin = 50
+            self.all_sequences = ['t1', 't1post', 't2', 'flair']
+
+        elif self.dataset_name == 'Severance':
+            self.all_sequences = ['t1', 't2', 'flair']
 
         self.exclude = False
-        self.all_sequences = ['t1', 't1post', 't2', 'flair']
         if self.exclude:
             self.exclude_sequence = 'flair'  
             self.included_sequences = [seq for seq in self.all_sequences 
                                     if seq != self.exclude_sequence]
+            
+        # self.training_scheme = 'random_split'
+        self.split = 1
 
         # network
         self.backbone = 'resnet50'
         self.model_name = 'CTV29'
 
         # Score pivots
-        self.spv_num = 101
+        self.spv_num = 10
 
         # exp description
         self.exp_name = ''

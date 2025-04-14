@@ -26,7 +26,11 @@ def main(cfg):
     else:
         train_dataset, _, test_loader = dataloader_gen.gen_dataloader(cfg)
 
-    train_dataset_scores = train_dataset.df[cfg.label_type].values
+    if cfg.dataset_name == 'Simulation':
+        train_dataset_scores = train_dataset.df[cfg.label_type].values
+    elif cfg.dataset_name == 'Severance':
+        train_dataset_scores = train_dataset.df['label'].values
+
     cfg.n_scores = len(np.unique(train_dataset_scores))
 
     cfg.log_file = cfg.log_configs()
@@ -153,7 +157,7 @@ def train(cfg, model, optimizer, data_loader, epoch):
         for dl_iter in range(cfg.batch_size):
             sample = next(dataloader_iterator)
 
-            scores_tmp = torch.cat([sample[f'img_{im_idx}_fr_iqm'] for im_idx in range(cfg.im_num)])
+            scores_tmp = torch.cat([sample[f'img_{im_idx}_label'] for im_idx in range(cfg.im_num)])
             scores_tmp = scores_tmp.cuda().float()
             scores.append(scores_tmp)
 
@@ -187,7 +191,10 @@ def train(cfg, model, optimizer, data_loader, epoch):
 
 def evaluation(cfg, model, data_loader):
     model.eval()
-    test_fr_iqm_gt = data_loader.dataset.df_test[cfg.label_type].values
+    if cfg.dataset_name == 'Simulation':
+        test_label_gt = data_loader.dataset.df_test[cfg.label_type].values
+    elif cfg.dataset_name == 'Severance':
+        test_label_gt = data_loader.dataset.df_test['label'].values
 
     preds_list = []
     with torch.no_grad():
@@ -210,9 +217,9 @@ def evaluation(cfg, model, data_loader):
     preds_np = torch.stack(preds_list).cpu().detach().numpy().squeeze()
     print(preds_np.shape)
 
-    srcc = spearmanr(preds_np, test_fr_iqm_gt)[0]
-    pcc = pearsonr(preds_np, test_fr_iqm_gt)[0]
-    mae = np.abs(preds_np - test_fr_iqm_gt).mean()
+    srcc = spearmanr(preds_np, test_label_gt)[0]
+    pcc = pearsonr(preds_np, test_label_gt)[0]
+    mae = np.abs(preds_np - test_label_gt).mean()
 
     write_log(cfg.log_file, f'\nTest MAE: {mae: .4f} SRCC: {srcc: .4f} PCC: {pcc: .4f}')
 

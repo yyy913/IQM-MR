@@ -6,7 +6,7 @@ from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
 
 class Maxlloyd:
-    def __init__(self, scores, rpt_num):
+    def __init__(self, scores, rpt_num, score_max):
         self.scores = scores
         self.scores[self.scores == 0] = self.scores[self.scores.argsort()][1]
 
@@ -14,7 +14,7 @@ class Maxlloyd:
         score_max = self.scores.max()
 
         rpt_scores = np.arange(start=score_min, stop=score_max, step=np.abs(score_min - score_max) / (rpt_num - 2))
-        self.init_r = np.array([0] + rpt_scores.tolist() + [100])
+        self.init_r = np.array([0] + rpt_scores.tolist() + [score_max])
         self.init_t = np.array([((self.init_r[r] + self.init_r[r + 1]) / 2) for r in range(len(self.init_r) - 1)])
 
     def get_new_rpt_scores(self):
