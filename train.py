@@ -145,6 +145,8 @@ def main(cfg):
         print('lr: %.6f' % (optimizer.param_groups[0]['lr']))
         if lr_scheduler:
             lr_scheduler.step()
+        
+        torch.cuda.empty_cache()
 
     write_log(cfg.log_file, 'Training End')
     write_log(cfg.log_file,
