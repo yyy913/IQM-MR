@@ -35,8 +35,8 @@ def Znormalization(image):
     return tmp
 
 def minmax_normalization(image):
-    min_val = np.min(image)
-    max_val = np.max(image)
+    min_val = image.min()
+    max_val = image.max()
     tmp = (image - min_val) / (max_val - min_val)
     return tmp
 
@@ -47,7 +47,7 @@ def crop(img, crop_size=320):
     h_from = (height - crop_size) // 2
     h_to = h_from + crop_size
 
-    return img[:, h_from:h_to, w_from:w_to]
+    return img[..., h_from:h_to, w_from:w_to]
 
 def padding(volume, size=320):
     slices, height, width = volume.shape

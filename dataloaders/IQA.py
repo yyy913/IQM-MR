@@ -46,8 +46,8 @@ class Train(Dataset):
             elif self.dataset_name == 'Severance':
                 img_name = self.image_dir + f'{sequence}/{subject_id}.npy'
                 img_label = self.df['label'].iloc[self.idx[im_num][idx]]
-                img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
-                img = minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))
+                img = np.load(img_name)[slice_idx]
+                img = torch.from_numpy(minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))).float()
 
             else:
                 raise ValueError(f'Undefined database ({self.dataset_name}) has been given')
@@ -100,8 +100,8 @@ class Test(Dataset):
         elif self.dataset_name == 'Severance':
             img_name = self.image_dir + f'{sequence}/{subject_id}.npy'
             img_label = self.df_test['label'].iloc[idx]
-            img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
-            img = minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))
+            img = np.load(img_name)[slice_idx]
+            img = torch.from_numpy(minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))).float()
 
         else:
             raise ValueError(f'Undefined database ({self.dataset_name}) has been given')
@@ -153,8 +153,8 @@ class Ref(Dataset):
         elif self.dataset_name == 'Severance':
             img_name = self.image_dir + f'{sequence}/{subject_id}.npy'
             img_label = self.df_base['label'].iloc[self.idx_0[idx]]
-            img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
-            img = minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))
+            img = np.load(img_name)[slice_idx]
+            img = torch.from_numpy(minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))).float()
 
         else:
             raise ValueError(f'Undefined database ({self.dataset_name}) has been given')

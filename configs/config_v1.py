@@ -4,10 +4,10 @@ from utils.util import get_current_time, write_log
 class ConfigV1:
     def __init__(self):
         # dataset
-        self.dataset_name = 'Simulation' # 'Simulation', 'Severance'
-        self.dataset_root = 'data/'
+        self.dataset_name = 'Severance' # 'Simulation', 'Severance'
+        self.dataset_root = 'data/severance/' # 'data/', 'data/severance/'
         self.datasplit_root = 'datasplit/'
-        self.label_df_root = 'iqm_csv/fr-iqm_20250215.csv'     #'iqm_csv/severance_label_250415.csv'
+        self.label_df_root = 'iqm_csv/severance_label_250415.csv'     #'fr-iqm_20250215.csv', 'severance_label_250415.csv'
 
         # self.mix_sequence = True 
         if self.dataset_name == 'Simulation':
