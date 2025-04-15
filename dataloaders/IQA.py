@@ -3,6 +3,9 @@ import numpy as np
 import torchvision
 import torch
 from torch.utils.data import Dataset
+import torch.nn.functional as F
+
+from mri_processing import crop, minmax_normalization
 
 from network.network_modules import PairGenerator
 from dataloaders.get_df import get_df_v1
@@ -38,15 +41,17 @@ class Train(Dataset):
                 else:
                     img_name = self.image_dir + f'{sequence}_g{motion_level}/{subject_id}_motion.npy'
                 img_label = self.df[self.label_type].iloc[self.idx[im_num][idx]]
+                img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
 
             elif self.dataset_name == 'Severance':
                 img_name = self.image_dir + f'{sequence}/{subject_id}.npy'
                 img_label = self.df['label'].iloc[self.idx[im_num][idx]]
+                img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
+                img = minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))
 
             else:
                 raise ValueError(f'Undefined database ({self.dataset_name}) has been given')
 
-            img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
             sample[f'img_{im_num}_label'] = img_label
             sample[f'img_{im_num}_group'] = self.group[im_num][idx]
             sample[f'img_{im_num}'] = img
@@ -90,15 +95,16 @@ class Test(Dataset):
             else:
                 img_name = self.image_dir + f'{sequence}_g{motion_level}/{subject_id}_motion.npy'
             img_label = self.df_test[self.label_type].iloc[idx]
+            img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
 
         elif self.dataset_name == 'Severance':
             img_name = self.image_dir + f'{sequence}/{subject_id}.npy'
             img_label = self.df_test['label'].iloc[idx]
+            img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
+            img = minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))
 
         else:
             raise ValueError(f'Undefined database ({self.dataset_name}) has been given')
-
-        img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
 
         sample['img_path'] = img_name
         sample['img_label'] = img_label
@@ -141,16 +147,18 @@ class Ref(Dataset):
             else:
                 img_name = self.image_dir + f'{sequence}_g{motion_level}/{subject_id}_motion.npy'
             img_label = self.df_base[self.label_type].iloc[self.idx_0[idx]]
+            img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
+
 
         elif self.dataset_name == 'Severance':
             img_name = self.image_dir + f'{sequence}/{subject_id}.npy'
             img_label = self.df_base['label'].iloc[self.idx_0[idx]]
+            img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
+            img = minmax_normalization(crop(img, crop_size=min(img.shape[-1], img.shape[-2])))
 
         else:
             raise ValueError(f'Undefined database ({self.dataset_name}) has been given')
 
-        img = torch.from_numpy(np.load(img_name)).float()[slice_idx]
-        
         sample['img_path'] = img_name
         sample['img_label'] = img_label
         sample[f'img'] = img 

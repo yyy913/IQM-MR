@@ -61,7 +61,7 @@ def padding(volume, size=320):
     return padded_volume
 
 def zero_pad_data(data, target_size=396):
-    _, _, h, w = data.shape
+    h, w = data.shape[-2:]
     if w >= target_size and h >= target_size:
         return data
     
