@@ -106,7 +106,8 @@ class Test(Dataset):
         else:
             raise ValueError(f'Undefined database ({self.dataset_name}) has been given')
 
-        sample['img_path'] = img_name + '_' + slice_idx
+        sample['img_path'] = img_name
+        sample['slice_idx'] = slice_idx
         sample['img_label'] = img_label
         sample[f'img'] = img            
 
@@ -159,7 +160,8 @@ class Ref(Dataset):
         else:
             raise ValueError(f'Undefined database ({self.dataset_name}) has been given')
 
-        sample['img_path'] = img_name + '_' + slice_idx
+        sample['img_path'] = img_name
+        sample['slice_idx'] = slice_idx
         sample['img_label'] = img_label
         sample[f'img'] = img 
 
