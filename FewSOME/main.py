@@ -438,14 +438,14 @@ def evaluate(anchor, base_ind, ref_dataset, val_dataset, model, indexes, criteri
     outputs[outputs <= thres] =0
     
     from torchvision.utils import save_image
-    os.makedirs('./output/fp', exist_ok=True)
-    os.makedirs('./output/fn', exist_ok=True)
+    os.makedirs(f'./outputs/fp/{model_name}', exist_ok=True)
+    os.makedirs(f'./outputs/fn/{model_name}', exist_ok=True)
 
     for idx, (pred, gt, img) in enumerate(zip(outputs, labels, imgs)):
         if pred == 1 and gt == 0:          # False Positive
-            save_image(img, f'./output/fp/img_{idx}.png')
+            save_image(img, f'./outputs/fp/{model_name}/img_{idx}.png')
         elif pred == 0 and gt == 1:        # False Negative
-            save_image(img, f'./output/fn/img_{idx}.png')
+            save_image(img, f'./outputs/fn/{model_name}/img_{idx}.png')
 
     f1 = f1_score(np.array(df['label']),outputs)
     fp = len(df.loc[(outputs == 1) & (df['label'] == 0)])
@@ -485,7 +485,7 @@ def parse_arguments():
     parser.add_argument('--weight_decay', type=float, default=0.1)
     parser.add_argument('--seed', type=int, default = 100)
     parser.add_argument('--weight_init_seed', type=int, default = 100)
-    parser.add_argument('--alpha', type=float, default = 0)
+    parser.add_argument('--alpha', type=float, default = 0.01)
     parser.add_argument('--smart_samp', type = int, choices = [0,1], default = 0)
     parser.add_argument('--k', type = int, default = 0)
     parser.add_argument('--epochs', type=int, required=True)
@@ -586,8 +586,8 @@ if __name__ == '__main__':
     elif (args.model_type == 'FASHION_VGG3'):
         if (args.pretrain ==1):
             model = FASHION_VGG3_pre(args.vector_size, args.biases)
-        else:
-            model = FASHION_VGG3(args.vector_size, args.biases)
+        # else:
+        #     model = FASHION_VGG3(args.vector_size, args.biases)
 
 
     if (args.model_type == 'RESNET'):
