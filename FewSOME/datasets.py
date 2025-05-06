@@ -11,7 +11,6 @@ from torch.utils.data import Dataset
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from mri_processing import crop, minmax_normalization
 
-
 class SeveranceDataset(Dataset):
     def __init__(self,
                  df,            
@@ -104,5 +103,5 @@ class SeveranceDataset(Dataset):
         else:
             img2  = torch.Tensor([1])
             label = torch.FloatTensor([float(self.targets[idx])])
-
-        return img, img2, label, base
+            
+        return img, img2, label, base, int(self.df['label'][idx].item())

@@ -118,7 +118,7 @@ def train(model, lr, weight_decay, train_dataset, val_dataset, epochs, criterion
             for batch_ind,index in enumerate(batches[i]):
 
                 seed = (epoch+1) * (i+1) * (batch_ind+1)
-                img1, img2, labels, base = train_dataset.__getitem__(index, seed, base_ind)
+                img1, img2, labels, base, score = train_dataset.__getitem__(index, seed, base_ind)
 
                 # Forward
                 img1 = img1.to(device)
@@ -223,7 +223,7 @@ def train(model, lr, weight_decay, train_dataset, val_dataset, epochs, criterion
                 training_time_best = (time.time() - start_time) - (eval_time*(epoch+1))
 
                 training_time = (time.time() - start_time) - (eval_time*(epoch+1))
-                write_results(model_name, normal_class, model, df, ref_vecs,num_ref_eval, num_ref_dist, val_auc, epoch, val_auc_min, training_time_best,f1,acc, train_losses, inf_times, total_times)
+                write_results(model_name, normal_class, model, best_df, ref_vecs,num_ref_eval, num_ref_dist, val_auc, epoch, val_auc_min, training_time_best,f1,acc, train_losses, inf_times, total_times)
 
             else:
                 max_iter+=1
@@ -286,7 +286,7 @@ def write_results(model_name, normal_class, model, df, ref_vecs,num_ref_eval, nu
     for f in os.listdir('./outputs/ED/class_'+str(normal_class) + '/'):
       if (model_name in f) :
           os.remove(f'./outputs/ED/class_'+str(normal_class) + '/{}'.format(f))
-    df.to_csv('./outputs/ED/class_'+str(normal_class)+'/' +model_name_temp)
+    df.to_csv('./outputs/ED/class_'+str(normal_class)+'/' +model_name_temp+'.csv', index = False)
 
     for f in os.listdir('./outputs/ref_vec/class_'+str(normal_class) + '/'):
       if (model_name in f) :
@@ -317,7 +317,7 @@ def init_feat_vec(model,base_ind, train_dataset, device ):
         '''
 
         model.eval()
-        anchor,_,_,_ = train_dataset.__getitem__(base_ind)
+        anchor,_,_,_,_ = train_dataset.__getitem__(base_ind)
         with torch.no_grad():
           anchor = model(anchor.to(device).float())
 
@@ -366,7 +366,7 @@ def evaluate(anchor, base_ind, ref_dataset, val_dataset, model, indexes, criteri
     np.random.shuffle(ind)
     #loop through the reference images and 1) get the reference image from the dataloader, 2) get the feature vector for the reference image and 3) initialise the values of the 'out' dictionary as a list.
     for i in ind:
-      img1, _, _, _ = ref_dataset.__getitem__(i)
+      img1, _, _, _, _ = ref_dataset.__getitem__(i)
       if (i == base_ind):
         ref_images['images{}'.format(i)] = anchor
       else:
@@ -378,6 +378,7 @@ def evaluate(anchor, base_ind, ref_dataset, val_dataset, model, indexes, criteri
     minimum_dists=[]
     lst=[]
     labels=[]
+    scores=[]
     loss_sum =0
     inf_times=[]
     total_times= []
@@ -390,9 +391,11 @@ def evaluate(anchor, base_ind, ref_dataset, val_dataset, model, indexes, criteri
 
             image = data[0][0]
             label = data[2].item()
+            score = data[4].item()
             imgs.append(image[0].cpu())
 
             labels.append(label)
+            scores.append(score)
             total =0
             mini=torch.Tensor([1e50])
             t1 = time.time()
@@ -421,8 +424,8 @@ def evaluate(anchor, base_ind, ref_dataset, val_dataset, model, indexes, criteri
             torch.cuda.empty_cache()
 
     #create dataframe of distances to each feature vector in the reference set for each test feature vector
-    cols = ['label','minimum_dists', 'means']
-    df = pd.concat([pd.DataFrame(labels, columns = ['label']), pd.DataFrame(minimum_dists, columns = ['minimum_dists']),  pd.DataFrame(means, columns = ['means'])], axis =1)
+    cols = ['label', 'score', 'pred_binary','minimum_dists', 'means']
+    df = pd.concat([pd.DataFrame(labels, columns = ['label']),pd.DataFrame(scores, columns = ['score']),pd.DataFrame(minimum_dists, columns = ['pred_binary']), pd.DataFrame(minimum_dists, columns = ['minimum_dists']),  pd.DataFrame(means, columns = ['means'])], axis =1)
     for i in range(0, num_ref_eval):
         df= pd.concat([df, pd.DataFrame(outs['outputs{}'.format(i)])], axis =1)
         cols.append('ref{}'.format(i))
@@ -432,8 +435,8 @@ def evaluate(anchor, base_ind, ref_dataset, val_dataset, model, indexes, criteri
     #calculate metrics
     fpr, tpr, thresholds = roc_curve(np.array(df['label']),np.array(df['minimum_dists']))
     auc_min = metrics.auc(fpr, tpr)
-    outputs = np.array(df['minimum_dists'])
-    thres = np.percentile(outputs, 10)
+    outputs = np.array(df['pred_binary'])
+    thres = np.percentile(outputs, 50)
     outputs[outputs > thres] =1
     outputs[outputs <= thres] =0
     
