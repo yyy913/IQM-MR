@@ -88,7 +88,17 @@ class MRART(data.Dataset):
         img = torch.FloatTensor(img)
         img = torch.stack((img,img,img),1)
 
+        # img_sag = np.array(img.dataobj)[85:105,:,:]
+        # img_sag = np.transpose(img_sag, (0, 2, 1))
+        # print(img_sag.shape)
 
+        # img_cor = np.array(img.dataobj)[:,85:105,:]
+        # img_cor = np.transpose(img_cor, (1, 2, 0))
+        # print(img_cor.shape)
+
+        # img_ax = np.array(img.dataobj)[:,:,160:185]
+        # img_ax = np.transpose(img_ax, (2, 1, 0))
+        # print(img_ax.shape)
 
         if self.task == 'train':
             np.random.seed(seed)
